@@ -8,7 +8,7 @@ export const routes: Routes = [
   },
   {
     path: 'tasks',
-    //canActivate: [authGuard],
+    canActivate: [authGuard],
     loadChildren: () => import('./features/tasks/tasks.routes').then((m) => m.TASK_ROUTES),
   },
   { path: '', redirectTo: 'tasks/board', pathMatch: 'full' },
