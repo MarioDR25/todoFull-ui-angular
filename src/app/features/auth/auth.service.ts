@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
@@ -12,9 +12,9 @@ export class AuthService {
   private readonly router = inject(Router);
   private readonly storage = inject(StorageService);
 
-  isAuthenticated(): boolean {
-    return !!this.storage.get('token');
-  }
+  private _token = signal<string | null>(this.storage.get('token'));
+  public isAuthenticated = computed(() => !!this._token());
+  
 
   login(credentials: LoginRequest ): Observable<AuthResponse> {
     return this.http.post(`${environment.apiUrl}/Auth/login`, credentials).pipe(
@@ -37,6 +37,7 @@ export class AuthService {
   logout(): void {
     this.storage.remove('token');
     this.storage.remove('name');
+    this._token.set(null);
     this.router.navigate(['/auth/login']);
   }
 }
